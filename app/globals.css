@@ -1,0 +1,544 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+Devanagari:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Cinzel', serif;
+  --font-body: 'Crimson Pro', serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-devanagari: 'Noto Sans Devanagari', serif;
+
+  --saffron: #f57c00;
+  --saffron-light: #ffb74d;
+  --saffron-dark: #e65100;
+  --kashmir-blue: #1a237e;
+  --kashmir-blue-light: #3949ab;
+  --earth: #5d4037;
+  --earth-light: #8d6e63;
+  --cream: #fdf8f0;
+  --deep-red: #8b1a1a;
+  --gold: #ffd700;
+  --gold-muted: #c9a227;
+
+  /* Premium layered shadows */
+  --shadow-xs: 0 1px 2px rgba(101, 50, 28, 0.06);
+  --shadow-sm: 0 1px 3px rgba(101, 50, 28, 0.08), 0 1px 2px rgba(101, 50, 28, 0.04);
+  --shadow-md: 0 4px 16px -2px rgba(101, 50, 28, 0.10), 0 2px 6px -2px rgba(101, 50, 28, 0.06);
+  --shadow-lg: 0 12px 32px -6px rgba(101, 50, 28, 0.14), 0 6px 14px -6px rgba(101, 50, 28, 0.08);
+  --shadow-xl: 0 24px 56px -12px rgba(101, 50, 28, 0.18), 0 10px 24px -10px rgba(101, 50, 28, 0.10);
+  --shadow-glow: 0 0 0 1px rgba(245, 124, 0, 0.08), 0 8px 28px -6px rgba(245, 124, 0, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--cream);
+  color: #1a1007;
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display headings get refined tracking */
+.font-display {
+  letter-spacing: -0.01em;
+}
+
+/* Text selection */
+::selection {
+  background: rgba(245, 124, 0, 0.22);
+  color: #4a2200;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #fdf0e0;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--saffron-light), var(--saffron));
+  border-radius: 8px;
+  border: 2px solid #fdf0e0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--saffron), var(--saffron-dark));
+}
+
+/* ─── Backgrounds ─────────────────────────────────────────────────────────── */
+
+/* KP Pattern background — layered warm dot weave */
+.kp-pattern-bg {
+  background-color: var(--cream);
+  background-image:
+    radial-gradient(circle at 20px 20px, rgba(245, 124, 0, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 60px 60px, rgba(245, 124, 0, 0.03) 1px, transparent 1px),
+    radial-gradient(140% 120% at 50% -10%, rgba(255, 222, 173, 0.35), transparent 55%);
+  background-size: 80px 80px, 80px 80px, 100% 100%;
+  background-attachment: fixed, fixed, fixed;
+}
+
+/* Soft aurora blobs container helper */
+.aurora-bg {
+  position: relative;
+  isolation: isolate;
+}
+
+/* ─── Glassmorphism ───────────────────────────────────────────────────────── */
+
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.glass-saffron {
+  background: rgba(255, 248, 240, 0.7);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(245, 124, 0, 0.18);
+}
+.glass-dark {
+  background: rgba(101, 50, 28, 0.55);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Premium shadows as utilities ────────────────────────────────────────── */
+
+.shadow-premium { box-shadow: var(--shadow-md); }
+.shadow-premium-lg { box-shadow: var(--shadow-lg); }
+.shadow-premium-xl { box-shadow: var(--shadow-xl); }
+.shadow-glow-saffron { box-shadow: var(--shadow-glow); }
+
+/* Decorative divider */
+.kp-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--saffron);
+}
+.kp-divider::before,
+.kp-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(245, 124, 0, 0.5), transparent);
+}
+
+/* Sacred glow effect */
+.sacred-glow {
+  box-shadow: 0 0 20px rgba(245, 124, 0, 0.18), 0 0 60px rgba(245, 124, 0, 0.06);
+}
+.sacred-glow-pulse {
+  animation: sacredGlowPulse 4s ease-in-out infinite;
+}
+@keyframes sacredGlowPulse {
+  0%, 100% { box-shadow: 0 0 22px rgba(245, 124, 0, 0.20), 0 0 60px rgba(245, 124, 0, 0.06); }
+  50% { box-shadow: 0 0 34px rgba(245, 124, 0, 0.34), 0 0 90px rgba(245, 124, 0, 0.12); }
+}
+
+/* ─── Buttons ─────────────────────────────────────────────────────────────── */
+
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--saffron-light) 0%, var(--saffron) 45%, var(--saffron-dark) 100%);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  background-size: 220% 100%;
+  background-position: 180% 0;
+  transition: background-position 0.7s ease;
+}
+.btn-primary:hover::after { background-position: -40% 0; }
+
+/* ─── Festival card shine ─────────────────────────────────────────────────── */
+@keyframes shine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shine-on-hover { position: relative; }
+.shine-on-hover:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 215, 0, 0.14) 50%, transparent 100%);
+  background-size: 200% auto;
+  animation: shine 0.9s linear;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ─── Nav link ────────────────────────────────────────────────────────────── */
+/* Active/hover state is shown by the pill background only (no underline bar). */
+.nav-link {
+  position: relative;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+/* ─── Cards ───────────────────────────────────────────────────────────────── */
+.kp-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s, border-color 0.35s;
+  will-change: transform;
+}
+.kp-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Subtle gradient hairline border on hover for premium cards */
+.card-ring {
+  position: relative;
+}
+.card-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(245, 124, 0, 0.45), rgba(255, 215, 0, 0.15), transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s;
+  pointer-events: none;
+}
+.card-ring:hover::before { opacity: 1; }
+
+/* Festival badge */
+.festival-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 11px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: var(--font-ui);
+}
+
+/* Devanagari text */
+.devanagari,
+.font-devanagari {
+  font-family: var(--font-devanagari);
+}
+
+/* ─── Panchang cell ───────────────────────────────────────────────────────── */
+.panchang-cell {
+  border: 1px solid rgba(245, 124, 0, 0.18);
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+.panchang-cell:hover {
+  border-color: var(--saffron);
+  background: #fff8f0;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.panchang-cell.has-festival {
+  background: linear-gradient(135deg, #fff8e7, #fff3cd);
+  border-color: var(--saffron);
+}
+
+/* Star rating for muhurat */
+.muhurat-star {
+  color: #e3d8c8;
+  font-size: 18px;
+  transition: transform 0.2s, color 0.2s;
+}
+.muhurat-star.filled {
+  color: var(--gold-muted);
+  filter: drop-shadow(0 1px 2px rgba(201, 162, 39, 0.4));
+}
+
+/* Chat bubble */
+.chat-bubble-user {
+  background: linear-gradient(135deg, #f57c00, #ff9800);
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+}
+.chat-bubble-ai {
+  background: white;
+  border: 1px solid rgba(245, 124, 0, 0.2);
+  border-radius: 18px 18px 18px 4px;
+}
+
+/* ─── Loading ─────────────────────────────────────────────────────────────── */
+@keyframes sacred-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.sacred-loading {
+  animation: sacred-pulse 1.5s ease-in-out infinite;
+}
+
+/* Shimmer skeleton */
+@keyframes shimmer {
+  0% { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f4e9da 25%, #fbf3e7 50%, #f4e9da 75%);
+  background-size: 936px 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 8px;
+}
+
+/* ─── Motion / animations ─────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up {
+  animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+
+@keyframes spinSlow {
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow { animation: spinSlow 26s linear infinite; }
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+/* Scroll reveal primitive (toggled by Reveal component) */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Page enter transition */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.page-enter {
+  animation: pageEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Focus visibility for accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--saffron);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ─── Dark "temple" mode ──────────────────────────────────────────────────────
+   Warm, low-glare dark theme. Saffron/gold accents are kept (they pop on dark).
+   Implemented as a curated remap of the app's actual palette utilities so it
+   covers every page without per-component edits. */
+
+html.dark body {
+  background-color: #16100a !important;
+  color: #e9ddcd !important;
+}
+html.dark .kp-pattern-bg {
+  background-color: #16100a !important;
+  background-image:
+    radial-gradient(circle at 20px 20px, rgba(245, 124, 0, 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 60px 60px, rgba(245, 124, 0, 0.04) 1px, transparent 1px),
+    radial-gradient(140% 120% at 50% -10%, rgba(120, 70, 20, 0.30), transparent 55%) !important;
+}
+html.dark ::-webkit-scrollbar-track { background: #1f160e; }
+
+/* Surfaces */
+html.dark .bg-white { background-color: #231811 !important; }
+html.dark .bg-white\/70,
+html.dark .bg-white\/80,
+html.dark .bg-white\/90 { background-color: rgba(40, 28, 20, 0.72) !important; }
+
+/* Translucent tint variants used in the calendar grid */
+html.dark .bg-slate-50\/80 { background-color: rgba(52, 42, 33, 0.85) !important; }
+html.dark .bg-gray-50\/40,
+html.dark .bg-gray-50\/50 { background-color: rgba(40, 30, 22, 0.5) !important; }
+
+/* Light tint surfaces → warm dark tints */
+html.dark .bg-cream,
+html.dark .bg-amber-50,
+html.dark .bg-saffron-50,
+html.dark .bg-orange-50,
+html.dark .bg-rose-50,
+html.dark .bg-gray-50,
+html.dark .bg-gray-100,
+html.dark .bg-slate-50,
+html.dark .bg-slate-100,
+html.dark .bg-green-50,
+html.dark .bg-red-50,
+html.dark .bg-blue-50,
+html.dark .bg-indigo-50,
+html.dark .bg-purple-50,
+html.dark .bg-earth-50 { background-color: #2a1d14 !important; }
+
+/* Text */
+html.dark .text-earth-900,
+html.dark .text-earth-800 { color: #f1e6d8 !important; }
+html.dark .text-earth-700,
+html.dark .text-earth-600 { color: #cdbba6 !important; }
+html.dark .text-earth-500,
+html.dark .text-earth-400 { color: #a08a76 !important; }
+
+/* Borders */
+html.dark .border-earth-100,
+html.dark .border-earth-200,
+html.dark .border-saffron-100,
+html.dark .border-saffron-200,
+html.dark .border-amber-100,
+html.dark .border-amber-200,
+html.dark .border-orange-100,
+html.dark .border-slate-200,
+html.dark .border-gray-300 { border-color: rgba(245, 200, 140, 0.14) !important; }
+
+/* Glass */
+html.dark .glass { background: rgba(35, 24, 17, 0.72) !important; border-color: rgba(255, 255, 255, 0.07) !important; }
+html.dark .glass-saffron { background: rgba(48, 31, 18, 0.72) !important; border-color: rgba(245, 124, 0, 0.24) !important; }
+
+/* Gradient stops (hero, cards) — darken warm light stops */
+html.dark .from-amber-50,
+html.dark .from-orange-50,
+html.dark .from-saffron-50,
+html.dark .from-amber-50\/60 { --tw-gradient-from: #221710 var(--tw-gradient-from-position) !important; }
+html.dark .via-orange-50\/60,
+html.dark .via-amber-50 { --tw-gradient-via: #2a1d14 var(--tw-gradient-via-position) !important; }
+html.dark .to-cream,
+html.dark .to-amber-50,
+html.dark .to-orange-50 { --tw-gradient-to: #16100a var(--tw-gradient-to-position) !important; }
+
+/* Form controls */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #231811 !important;
+  color: #e9ddcd !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder { color: #8c7660 !important; }
+html.dark select optgroup,
+html.dark select option { background-color: #231811; color: #e9ddcd; }
+
+/* Saffron-tinted text stays readable on dark */
+html.dark .text-saffron-500,
+html.dark .text-saffron-600,
+html.dark .text-saffron-700,
+html.dark .text-saffron-800 { color: #ffb74d !important; }
+html.dark .text-amber-800,
+html.dark .text-amber-900,
+html.dark .text-amber-700 { color: #fbbf24 !important; }
+html.dark .text-red-700,
+html.dark .text-red-800 { color: #fca5a5 !important; }
+html.dark .text-green-700,
+html.dark .text-green-800 { color: #86efac !important; }
+
+/* Chat bubbles: the AI bubble is white in light mode → make it dark so text shows */
+html.dark .chat-bubble-ai {
+  background: #2a1d14 !important;
+  border-color: rgba(245, 124, 0, 0.28) !important;
+  color: #e9ddcd !important;
+}
+
+/* Selected-day / event tint cards that use white text on dark stay fine; ensure
+   any leftover pure-white utility text on light chips remains dark via inline styles. */
+
+/* ─── Print / Save-as-PDF ─────────────────────────────────────────────────── */
+@media print {
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  html, body {
+    background: #fff !important;
+  }
+  .kp-pattern-bg {
+    background: #fff !important;
+    background-image: none !important;
+  }
+  main { padding-top: 0 !important; }
+  * {
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .page-enter { animation: none !important; }
+  @page { margin: 1.2cm; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}

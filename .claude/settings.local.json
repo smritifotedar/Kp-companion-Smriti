@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /PID 22264 /F)",
+      "Bash(npx tsc *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "WebFetch(domain:ikashmir.net)",
+      "Bash(curl -sL -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0 Safari/537.36\" \"https://ikashmir.net/names/gotras.html\" -o /tmp/gotras.html)",
+      "Read(//tmp/**)",
+      "Bash(node -e ' *)",
+      "Bash(node gen.js)",
+      "Bash(curl -sL -A \"Mozilla/5.0\" \"https://www.youtube.com/feeds/videos.xml?channel_id=UC9RVEcNpR8VYWZzAS24eZeg\" -o feed.xml)",
+      "Bash(curl -s --max-time 20 \"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=Aries&day=TODAY\")",
+      "Bash(curl -s --max-time 20 \"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/weekly?sign=Taurus\")",
+      "Bash(curl -s --max-time 20 \"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/monthly?sign=Leo\")",
+      "Bash(curl -sL --max-time 25 \"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=Aries&day=TODAY\")",
+      "Bash(curl -sL --max-time 25 \"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=Aries&day=TOMORROW\")",
+      "Bash(curl -s -o cc.html -w \"%{http_code}\" --max-time 120 \"http://localhost:60796/kp-calendar\")",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git config *)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ]
+  }
+}
