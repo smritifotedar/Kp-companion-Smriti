@@ -1,249 +1,151 @@
-# 🕉️ Kashmiri Pandit Digital Companion
+# 🕉 Kashmiri Pandit Digital Companion
 
-A full-stack Next.js + Supabase web application for preserving and sharing Kashmiri Pandit cultural heritage, traditions, and religious practices — built on the **Sapta Rishi Samvat** (KP Panchang).
+A modern, premium web platform for the **Kashmiri Pandit (KP) community** — a complete Panchang, festival, ritual, and heritage companion built on the **Sapta Rishi Samvat (Laukika Samvat)**, the traditional Kashmiri calendar.
+
+> All dates, festivals and timings follow the **Kashmiri Pandit Panchang**, which is distinct from the standard Hindu (Vikram Samvat) Panchang.
+
+🔗 **Repo:** https://github.com/smritifotedar/Kp-companion-Smriti
 
 ---
 
 ## ✨ Features
 
-- 🗓 **Festival Calendar** — KP festivals per Sapta Rishi Samvat (Navreh, Herath, Zyeth Atham, etc.)
-- 📚 **Ritual Library** — Devgon, Vyah, Yagnopavit, Shraddha, Havan, and more
-- 💍 **Wedding Guide** — Complete KP wedding timeline, ceremonies, and interactive checklist
-- 🌙 **Janma Tithi Finder** — Birth Tithi, Nakshatra, Rashi per KP Panchang
-- ⏰ **Muhurat Finder** — Auspicious timings per Kashmiri Pandit Panchang
-- 🏛️ **Family Heritage** — Save Gotra, Kuldevta, native village, traditions
-- 📖 **KP Archive** — Articles, history, temples, culture
-- 🤖 **AI Knowledge Guide** — Claude-powered Q&A about KP traditions
+### 🗓 KP Panchang Calendar
+- Full daily Panchang — **Tithi, Nakshatra, Yoga, Karana, Vara** — for every day, per Sapta Rishi Samvat.
+- **Sunrise & Sunset** calibrated to the **Kashmiri Jantri** (mountain-horizon model for the Kashmir valley, with asymmetric east/west ridgelines).
+- **Rahu Kaal, Yamaganda, Gulika Kaal** and full **day/night Choghadiya**.
+- KP festivals & observances (Navreh, Herath, Zyeth Atham, Sharika Ashtami, Sangrandan…), with dual KP-month headers.
+- **Add to Calendar (.ics)** for any festival, and **Print / Save-as-PDF** for the month.
+- Moon-phase glyphs, festival ribbons, and a framed premium layout.
+
+### 🔭 Tools
+- **Janma Tithi Finder** — birth Tithi/Nakshatra/Rashi and the Gregorian date of the lunar birthday for any chosen year, plus **Namakaran** naming syllables.
+- **Muhurat Finder** — scan a date range for auspicious days by activity.
+- **Gotra Finder** — look up the gotra(s) associated with a Kashmiri Pandit surname (kram), compiled from the ikashmir.net gotra list.
+- **My Days** — save festivals & Janma Tithis with live countdowns and calendar export.
+
+### 🎵 Culture
+- **Bhajans & Wanwun** — devotional leelas, stotras, the vakhs of Lal Ded & Roopa Bhawani, ceremonial wanwun, and Kashmiri folk songs, with **inline YouTube playback**.
+- **Festival Calendar**, **Ritual Library** (Devgon, Herath, Lagan, Yagnopavit, Shraddha…), **Family Heritage** records, and the **KP Knowledge Archive**.
+
+### 🔮 Horoscope
+- Daily / Weekly / Monthly sun-sign horoscope via a **live astrology API**, with app-generated guidance for other periods.
+
+### 🤖 AI Knowledge Guide
+- Ask about KP traditions; the assistant is grounded in KP knowledge and receives the **live KP date context** (today's Tithi, Nakshatra, Samvat year).
+
+### 🎨 Experience
+- Astrological **animated celestial background** (starfield, constellations, shooting stars, zodiac rings).
+- **Dark "temple" mode**, scroll-reveal animations, premium hover/micro-interactions, fully responsive, with grouped dropdown navigation.
 
 ---
 
-## 🛠️ VS Code Setup Instructions (Step by Step)
+## 🛠 Tech Stack
 
-### Prerequisites
-Make sure you have these installed:
-- **Node.js 18+**: Download from https://nodejs.org
-- **VS Code**: Download from https://code.visualstudio.com
-- **Git**: Download from https://git-scm.com
-
----
-
-### Step 1: Open Project in VS Code
-
-1. Open **VS Code**
-2. Go to `File → Open Folder`
-3. Select the `kp-companion` folder you received
-4. VS Code will open the project
-
-**Recommended VS Code Extensions** (install from Extensions tab):
-- ES7+ React/Redux/React-Native snippets
-- Tailwind CSS IntelliSense
-- Prettier - Code formatter
-- TypeScript Vue Plugin (Volar)
+- **Next.js** (App Router) · **React** · **TypeScript**
+- **Tailwind CSS** (custom saffron/earth design system)
+- **lucide-react** icons
+- Astronomy via **Jean Meeus** algorithms with the **Lahiri / Chitrapaksha ayanamsa** — no external ephemeris dependency
+- Live horoscope API · optional **Supabase** client scaffolding
 
 ---
 
-### Step 2: Install Dependencies
-
-1. In VS Code, open the **Terminal**: `Terminal → New Terminal` (or `` Ctrl+` ``)
-2. Run this command:
+## 🚀 Getting Started
 
 ```bash
+# 1. Install dependencies
 npm install
-```
 
-Wait for all packages to install (may take 1-2 minutes).
+# 2. Create your environment file (.env.local — see below)
 
----
-
-### Step 3: Set Up Supabase (Database)
-
-#### 3a. Create a Supabase account
-1. Go to https://supabase.com
-2. Click **"Start your project"** → Sign up with GitHub or email
-3. Click **"New Project"**
-4. Fill in:
-   - **Project name**: `kp-companion`
-   - **Database password**: Choose a strong password (save it!)
-   - **Region**: Select nearest to you (e.g., ap-south-1 for India)
-5. Click **"Create new project"** — wait ~2 minutes for setup
-
-#### 3b. Get your Supabase credentials
-1. In your Supabase project dashboard, go to **Settings → API**
-2. Copy:
-   - **Project URL** (looks like `https://xxxx.supabase.co`)
-   - **anon/public key** (long string starting with `eyJ...`)
-   - **service_role key** (keep this secret!)
-
-#### 3c. Run the database schema
-1. In Supabase dashboard, go to **SQL Editor**
-2. Click **"New Query"**
-3. Open the file `supabase/migrations/001_initial_schema.sql` in VS Code
-4. Copy ALL the contents
-5. Paste into the Supabase SQL Editor
-6. Click **"Run"** (green play button)
-7. You should see "Success" for each statement
-
----
-
-### Step 4: Configure Environment Variables
-
-1. In VS Code, look at the file `.env.local.example`
-2. Create a NEW file in the project root called `.env.local`
-3. Copy the contents from `.env.local.example` into `.env.local`
-4. Fill in your values:
-
-```bash
-# From Supabase Settings → API
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-
-# From Supabase Settings → API (service_role key — keep secret!)
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-
-# From https://console.anthropic.com — for AI Guide feature
-ANTHROPIC_API_KEY=sk-ant-...
-
-# App URL (leave as-is for local development)
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-**Getting Anthropic API Key:**
-1. Go to https://console.anthropic.com
-2. Sign up / log in
-3. Go to **API Keys** → **Create Key**
-4. Copy the key (starts with `sk-ant-`)
-
-> ⚠️ IMPORTANT: Never commit `.env.local` to git. It's already in `.gitignore`.
-
----
-
-### Step 5: Run the Development Server
-
-In the VS Code terminal, run:
-
-```bash
+# 3. Start the dev server
 npm run dev
 ```
 
-You should see:
+Open [http://localhost:3000](http://localhost:3000).
+
+### Environment variables (`.env.local`)
+
+```env
+# Required for the AI Knowledge Guide — free key from https://console.groq.com
+GROQ_API_KEY=your_groq_api_key
+
+# Optional — only if you wire up Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
-▲ Next.js 14.x.x
-- Local: http://localhost:3000
-- Ready in Xs
-```
+
+> `.env.local` is git-ignored and is **never** committed. Everything except the AI Guide works without any keys.
 
 ---
 
-### Step 6: Open in Browser
+## 📜 Scripts
 
-1. Open your web browser
-2. Go to: **http://localhost:3000**
-3. You should see the Kashmiri Pandit Digital Companion!
-
----
-
-## 📱 Features That Work Without Supabase
-
-Even without Supabase configured, these features work fully:
-- ✅ Festival Calendar
-- ✅ Ritual Library
-- ✅ Wedding Guide & Checklist (saves to browser)
-- ✅ Janma Tithi Finder
-- ✅ Muhurat Finder
-- ✅ KP Archive
-- ✅ Family Heritage (saves locally to browser)
-
-The AI Knowledge Guide requires the `ANTHROPIC_API_KEY`.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Production build |
+| `npm run start` | Run the production build |
+| `npm run lint` | Lint the project |
 
 ---
 
-## 🗂️ Project Structure
+## 🗂 Project Structure
 
 ```
 kp-companion/
-├── app/                    # Next.js App Router pages
-│   ├── page.tsx            # Home page
-│   ├── festivals/          # Festival Calendar
-│   ├── rituals/            # Ritual Library
-│   ├── wedding/            # Wedding Guide
-│   ├── janma-tithi/        # Janma Tithi Finder
-│   ├── muhurat/            # Muhurat Finder
-│   ├── heritage/           # Family Heritage
-│   ├── archive/            # KP Archive
-│   ├── knowledge-guide/    # AI Guide
+├── app/
+│   ├── page.tsx              # Home
+│   ├── kp-calendar/          # KP Panchang calendar
+│   ├── festivals/  rituals/  bhajans/  heritage/  archive/
+│   ├── janma-tithi/  muhurat/  gotra-finder/  my-days/  horoscope/
+│   ├── knowledge-guide/      # AI guide UI
 │   ├── api/
-│   │   └── ai-guide/       # AI API route
-│   ├── globals.css         # Global styles
-│   └── layout.tsx          # Root layout
+│   │   ├── ai-guide/         # AI route (Groq) + live KP date context
+│   │   └── horoscope/        # Live horoscope proxy
+│   ├── globals.css           # Design system + animations
+│   └── layout.tsx
 ├── components/
-│   └── layout/
-│       ├── Navbar.tsx      # Navigation
-│       └── Footer.tsx      # Footer
+│   ├── layout/ (Navbar, Footer)
+│   ├── home/ (TodayPanchangHero)
+│   └── ui/ (CelestialBackground, ThemeToggle, Reveal, SaveDayButton, ScrollProgress)
 ├── lib/
-│   ├── kp-panchang.ts      # KP Panchang calculations & data
-│   ├── kp-rituals.ts       # Ritual & wedding data
-│   ├── utils.ts            # Utilities
-│   └── supabase/           # Supabase client/server
-├── supabase/
-│   └── migrations/         # Database schema
-├── .env.local.example      # Environment template
-├── package.json
-├── tailwind.config.js
-└── next.config.mjs
+│   ├── kp-calendar.ts        # Panchang engine (sun/moon, sunrise/sunset, choghadiya…)
+│   ├── kp-panchang.ts        # Core KP data & helpers
+│   ├── kp-bhajans.ts  kp-horoscope.ts  kp-gotras.ts
+│   ├── kp-surname-gotra.ts   # Surname → gotra (ikashmir.net)
+│   ├── kp-namakaran.ts  kp-rituals.ts  my-days.ts  ics.ts
+│   └── supabase/
+└── tailwind.config.js · next.config.mjs · tsconfig.json
 ```
 
 ---
 
-## 🔧 Troubleshooting
+## 📐 Accuracy & Sources
 
-### "Module not found" error
-Run `npm install` again in the terminal.
+- **Panchang elements** use Jean Meeus astronomical formulas with the **Lahiri ayanamsa** (Indian standard). Accuracy is ±1 unit on boundary days.
+- **Sunrise/Sunset** for Kashmir is calibrated to the **Kashmiri Jantri** (raised mountain horizon); plains cities use the standard refraction horizon.
+- **Gotra-by-surname** data is compiled from [ikashmir.net/names/gotras.html](https://ikashmir.net/names/gotras.html) and is **indicative** — one surname can span many gotras; confirm with your family/purohit.
+- Bhajan & folk recordings open on YouTube (courtesy of community channels such as Kashmir Heritage).
+- Horoscope text comes from a public astrology API; the in-app fallback is for reflection only.
 
-### "Cannot connect to Supabase"
-- Check your `.env.local` file has correct values
-- Make sure there are no extra spaces in the keys
-- Restart the dev server: `Ctrl+C` then `npm run dev`
-
-### "AI Guide not working"
-- Ensure `ANTHROPIC_API_KEY` is set in `.env.local`
-- Check the key is valid at https://console.anthropic.com
-- Restart the server after adding the key
-
-### Port 3000 already in use
-Run on a different port: `npm run dev -- --port 3001`
+> ⚠️ This platform is a guide. For exact muhurat, ritual timing and major life decisions, always verify against the official **Vijayeshwar Panchang** and consult a qualified Kashmiri Pandit scholar/priest.
 
 ---
 
-## 🚀 Building for Production
+## ☁️ Deploy (Vercel)
 
-```bash
-npm run build
-npm start
-```
-
-## ☁️ Deploy to Vercel (Recommended)
-
-1. Push code to GitHub
-2. Go to https://vercel.com
-3. Import your GitHub repository
-4. Add environment variables in Vercel dashboard
-5. Deploy!
-
----
-
-## 📱 Future: React Native Mobile App
-
-The architecture is designed to support a React Native app sharing:
-- Business logic from `lib/kp-panchang.ts` and `lib/kp-rituals.ts`
-- Supabase backend (already mobile-compatible)
-- API routes (accessible from mobile)
+1. Push to GitHub (done ✅).
+2. Import the repo at [vercel.com](https://vercel.com).
+3. Add `GROQ_API_KEY` (and optional Supabase vars) in the project's Environment Variables.
+4. Deploy.
 
 ---
 
 ## 🙏 Acknowledgements
 
-This platform is dedicated to the Kashmiri Pandit community.
-Content is intended to be reviewed by qualified KP scholars.
-Built with respect for the traditions preserved by generations of KP families.
+Built to preserve and share Kashmiri Pandit heritage. Content is intended to be reviewed and validated by community scholars.
+
+*आचार्यात् पादमादत्ते पादं शिष्यः स्वमेधया* — “A quarter of learning comes from the teacher, a quarter through one's own intelligence.”
 
 **ॐ नमः शिवाय**
