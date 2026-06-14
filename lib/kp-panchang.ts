@@ -138,6 +138,26 @@ export const KP_FESTIVALS = [
     uniqueToKP: true,
   },
   {
+    id: 'gaad-batta',
+    name: 'Gaad Batta',
+    kashmiri: 'गाड बट',
+    description: 'A cherished Kashmiri Pandit household tradition — an offering of fish (gaad) and cooked rice (batta) to the Ghar Devta, the family\'s guardian house deity. Observed the morning after Khetsimavas (Khichi Mavas), the Amavasya of Pausha (Poh).',
+    tithi: 'Pratipada of Shukla Paksha, Magha (the day after Khetsimavas)',
+    significance: 'Honours the Ghar Devta — the protective household divinity. Fish-and-rice is placed in a sacred niche of the home (often the kitchen or a wall recess) as an offering of gratitude and a prayer for the family\'s wellbeing and prosperity through the year.',
+    rituals: [
+      'Cook gaad (fish) with batta (rice) — the traditional KP fish preparation',
+      'Offer a portion to the Ghar Devta in the home\'s sacred niche',
+      'Leave the offering for the household deity, then share the meal as a family',
+      'Follows the khichdi offered to the Yaksha on Khetsimavas the previous day',
+    ],
+    foods: ['Gaad (fish)', 'Batta (rice)', 'Muji Gaad (fish with radish)', 'Nadru (lotus stem)'],
+    month: 11, // Magha — the day after Pausha Amavasya
+    paksha: 'shukla',
+    tithiNumber: 1,
+    category: 'major',
+    uniqueToKP: true,
+  },
+  {
     id: 'pan-festival',
     name: 'Pan (Paan) Festival',
     kashmiri: 'पान',

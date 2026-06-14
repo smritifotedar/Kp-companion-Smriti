@@ -238,6 +238,12 @@ export const KP_EVENT_RULES: EventRule[] = [
     kpMonth: 10, paksha: 'krishna', tithiNumber: 15,
   },
   {
+    id: 'gaad-batta', name: 'Gaad Batta', kashmiri: 'गाड बट',
+    type: 'major', color: '#0e7490', uniqueToKP: true,
+    description: 'Pratipada Shukla Paksha, Magha — the morning after Khetsimavas. Fish (gaad) and rice (batta) are offered to the Ghar Devta, the family guardian deity, in a sacred niche of the home, then shared as a family meal.',
+    kpMonth: 11, paksha: 'shukla', tithiNumber: 1,
+  },
+  {
     id: 'gatah-ashtami', name: 'Gatah Ashtami', kashmiri: 'गत अष्टमी',
     type: 'major', color: '#b45309', uniqueToKP: true,
     description: 'Krishna Paksha Ashtami of Margashirsha — important KP observance dedicated to ancestral rites and family deity worship.',
