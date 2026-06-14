@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { KP_RITUALS, type Ritual } from '@/lib/kp-rituals';
-import { ChevronDown, ChevronUp, Play, Clock, User, CalendarClock, Quote } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { KP_RITUALS, type Ritual, type ProcedureStep } from '@/lib/kp-rituals';
+import { PujaDiagram } from '@/components/ui/PujaDiagram';
+import { ChevronDown, ChevronUp, Play, Clock, User, CalendarClock, Quote, RotateCcw, ListChecks } from 'lucide-react';
 
 const CATEGORIES = ['All', 'Annual Ritual', 'Marriage Ceremony', 'Samskara', 'Ancestral Ritual', 'Vedic Ritual'];
 
@@ -42,16 +43,97 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+// Interactive step-by-step vidhi with progress tracking (saved per ritual)
+function PujaChecklist({ ritualId, steps }: { ritualId: string; steps: ProcedureStep[] }) {
+  const key = `puja-progress-${ritualId}`;
+  const [done, setDone] = useState<boolean[]>(() => steps.map(() => false));
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr) && arr.length === steps.length) setDone(arr);
+      }
+    } catch { /* ignore */ }
+  }, [key, steps.length]);
+
+  const save = (arr: boolean[]) => { try { localStorage.setItem(key, JSON.stringify(arr)); } catch { /* ignore */ } };
+  const toggle = (i: number) => setDone((prev) => { const arr = prev.map((v, j) => (j === i ? !v : v)); save(arr); return arr; });
+  const reset = () => { const arr = steps.map(() => false); save(arr); setDone(arr); };
+
+  const completed = done.filter(Boolean).length;
+  const pct = Math.round((completed / steps.length) * 100);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-saffron-100">
+        <h3 className="font-display font-bold text-earth-900 text-base flex items-center gap-2">
+          <ListChecks size={18} className="text-saffron-500" /> Step-by-Step Vidhi
+        </h3>
+        <button onClick={reset} className="text-xs text-earth-400 hover:text-saffron-600 inline-flex items-center gap-1 transition-colors">
+          <RotateCcw size={12} /> Reset
+        </button>
+      </div>
+
+      {/* progress */}
+      <div className="mb-4">
+        <div className="flex justify-between text-xs text-earth-500 mb-1">
+          <span>Your progress</span>
+          <span className="font-semibold text-saffron-700">{completed} / {steps.length} steps{pct === 100 ? ' · complete 🎉' : ''}</span>
+        </div>
+        <div className="h-2.5 rounded-full bg-earth-100 overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-saffron-400 to-saffron-600 rounded-full transition-[width] duration-500 ease-premium" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+
+      <ol className="space-y-2.5">
+        {steps.map((s, i) => (
+          <li key={i}>
+            <button
+              onClick={() => toggle(i)}
+              className={`w-full text-left flex items-start gap-3 rounded-2xl border p-3 transition-all duration-200 ${
+                done[i] ? 'bg-green-50/70 border-green-200' : 'bg-white border-earth-100 hover:border-saffron-200 hover:shadow-sm'
+              }`}
+            >
+              <span className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${
+                done[i] ? 'bg-green-500 text-white' : 'bg-saffron-100 text-saffron-700 border border-saffron-200'
+              }`}>
+                {done[i] ? '✓' : i + 1}
+              </span>
+              <div className="min-w-0">
+                <div className={`font-semibold text-sm ${done[i] ? 'text-green-800' : 'text-earth-900'}`}>{s.title}</div>
+                <p className="text-sm text-earth-600 leading-relaxed mt-0.5">{s.detail}</p>
+                {s.mantra && (
+                  <div className="mt-2 inline-flex items-start gap-1.5 bg-amber-50 border border-saffron-100 rounded-lg px-2.5 py-1.5">
+                    <span className="text-saffron-400 text-xs mt-0.5">🔱</span>
+                    <span className="font-devanagari text-earth-800 text-sm">{s.mantra}</span>
+                  </div>
+                )}
+                {s.tip && <p className="text-[11px] text-saffron-700 mt-1.5">💡 {s.tip}</p>}
+              </div>
+            </button>
+          </li>
+        ))}
+      </ol>
+      <p className="text-[11px] text-earth-400 mt-2">Tap a step to mark it done — your progress is saved on this device.</p>
+    </div>
+  );
+}
+
 function RitualDetail({ r }: { r: Ritual }) {
   return (
     <div className="px-5 pb-7 border-t border-saffron-100 pt-6 space-y-7">
-      {/* Video */}
-      {r.youtubeId && (
-        <div className="max-w-2xl mx-auto">
-          <VideoPlayer id={r.youtubeId} title={`${r.name} vidhi`} />
-          <p className="text-[11px] text-earth-400 text-center mt-1.5">Reference video — actual family vidhi may vary.</p>
-        </div>
-      )}
+      {/* Video + diagram */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
+        {r.youtubeId && (
+          <div>
+            <VideoPlayer id={r.youtubeId} title={`${r.name} vidhi`} />
+            <p className="text-[11px] text-earth-400 text-center mt-1.5">Reference video — actual family vidhi may vary.</p>
+          </div>
+        )}
+        {r.diagram && <PujaDiagram kind={r.diagram} />}
+      </div>
 
       {/* Quick facts */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -67,26 +149,23 @@ function RitualDetail({ r }: { r: Ritual }) {
         ))}
       </div>
 
+      {/* Before you begin */}
+      <Section title="🧭 Before You Begin">
+        <ul className="space-y-1.5">
+          {r.prep.map((p, i) => (
+            <li key={i} className="flex items-start gap-2 text-sm text-earth-600"><span className="text-saffron-400 mt-0.5 flex-shrink-0">•</span>{p}</li>
+          ))}
+        </ul>
+      </Section>
+
       {/* Purpose & significance */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Section title="🎯 Purpose"><p className="text-sm text-earth-600 leading-relaxed">{r.purpose}</p></Section>
         <Section title="🕉️ Significance"><p className="text-sm text-earth-600 leading-relaxed">{r.religiousSignificance}</p></Section>
       </div>
 
-      {/* Step-by-step vidhi */}
-      <Section title="📋 Step-by-Step Vidhi">
-        <ol className="space-y-3">
-          {r.procedure.map((s, i) => (
-            <li key={i} className="flex items-start gap-3">
-              <span className="w-7 h-7 rounded-full bg-gradient-to-br from-saffron-500 to-saffron-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">{i + 1}</span>
-              <div>
-                <div className="font-semibold text-earth-900 text-sm">{s.title}</div>
-                <p className="text-sm text-earth-600 leading-relaxed">{s.detail}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </Section>
+      {/* Interactive vidhi */}
+      <PujaChecklist ritualId={r.id} steps={r.procedure} />
 
       {/* Mantras */}
       <Section title="🔱 Mantras & Shlokas">
@@ -121,9 +200,7 @@ function RitualDetail({ r }: { r: Ritual }) {
         <Section title="✅ Tips & Things to Remember">
           <ul className="space-y-1.5">
             {r.tips.map((t, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-earth-600">
-                <span className="text-green-500 mt-0.5 flex-shrink-0">✓</span> {t}
-              </li>
+              <li key={i} className="flex items-start gap-2 text-sm text-earth-600"><span className="text-green-500 mt-0.5 flex-shrink-0">✓</span>{t}</li>
             ))}
           </ul>
         </Section>
@@ -162,8 +239,9 @@ export default function RitualsPage() {
         <div className="font-devanagari text-saffron-500 text-xl mb-2">कर्मकांड ज्ञान</div>
         <h1 className="font-display text-3xl sm:text-4xl font-bold text-earth-900 mb-3">Kashmiri Pandit Ritual Library</h1>
         <p className="text-earth-600 max-w-2xl mx-auto">
-          A complete, easy-to-follow guide to KP rituals — with the <strong>vidhi</strong> step by step, the{' '}
-          <strong>mantras &amp; shlokas</strong> to chant, the <strong>samagri</strong> you need, and a reference video for each.
+          A complete, do-it-yourself guide to every KP ritual — the <strong>vidhi step by step</strong> (with a progress
+          tracker), the <strong>mantras &amp; shlokas</strong> to chant, a <strong>setup diagram</strong>, the{' '}
+          <strong>samagri</strong> you need, and a reference video.
         </p>
       </div>
 
