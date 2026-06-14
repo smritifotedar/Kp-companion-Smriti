@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getSaptaRishiSamvat } from '@/lib/kp-panchang';
-import { Calendar, BookOpen, Star, Clock, Archive, Users, MessageCircle, CalendarDays, GitFork, Music, Sparkles } from 'lucide-react';
+import { Calendar, BookOpen, Star, Clock, Archive, Users, MessageCircle, CalendarDays, GitFork, Music, Sparkles, ScrollText, HeartHandshake } from 'lucide-react';
 import { Reveal } from '@/components/ui/Reveal';
 import { TodayPanchangHero } from '@/components/home/TodayPanchangHero';
 
@@ -52,6 +52,24 @@ const FEATURES = [
     description: 'Find your Tithi, Nakshatra, and Rashi as per the Kashmiri Pandit Panchang. Get yearly reminders.',
     color: 'from-amber-500 to-orange-600',
     tag: 'KP Panchang',
+  },
+  {
+    href: '/kundli',
+    icon: <ScrollText size={24} />,
+    title: 'Kundli (Birth Chart)',
+    kashmiri: 'जन्म कुंडली',
+    description: 'Generate your Vedic birth chart — Lagna, planets, Nakshatra & Vimshottari Dasha. Download a report.',
+    color: 'from-indigo-500 to-violet-700',
+    tag: 'Sidereal / Lahiri',
+  },
+  {
+    href: '/kundli-matching',
+    icon: <HeartHandshake size={24} />,
+    title: 'Kundli Matching',
+    kashmiri: 'कुंडली मिलान',
+    description: 'Ashtakoot 36-guna compatibility with Mangal Dosha. Clean, downloadable matching report.',
+    color: 'from-rose-500 to-pink-700',
+    tag: 'Guna Milan',
   },
   {
     href: '/horoscope',
