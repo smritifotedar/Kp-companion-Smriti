@@ -3,10 +3,10 @@
 import { useState, useMemo } from 'react';
 import { generateKundli, RASHIS_EN, rashiLord, type Kundli } from '@/lib/kp-kundli';
 import { KP_TITHIS } from '@/lib/kp-panchang';
-import { searchCities, type City } from '@/lib/cities';
+import { tzOffsetHours, type GeoCity } from '@/lib/geo';
+import { CityAutocomplete } from '@/components/ui/CityAutocomplete';
 import { NorthIndianChart } from '@/components/ui/NorthIndianChart';
-import { Reveal } from '@/components/ui/Reveal';
-import { MapPin, Printer, Sparkles } from 'lucide-react';
+import { Printer, Sparkles } from 'lucide-react';
 
 const RASHI_TRAIT = [
   'energetic, pioneering and bold', 'steady, patient and grounded', 'curious, communicative and quick',
@@ -30,22 +30,19 @@ export default function KundliPage() {
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');
   const [time, setTime] = useState('12:00');
-  const [cityQuery, setCityQuery] = useState('');
-  const [city, setCity] = useState<City | null>(null);
-  const [showList, setShowList] = useState(false);
+  const [city, setCity] = useState<GeoCity | null>(null);
   const [result, setResult] = useState<{ kundli: Kundli; name: string; dob: string; time: string; place: string } | null>(null);
   const [error, setError] = useState('');
-
-  const suggestions = useMemo(() => (showList ? searchCities(cityQuery) : []), [cityQuery, showList]);
 
   const handleGenerate = () => {
     setError('');
     if (!dob) { setError('Please enter your date of birth.'); return; }
-    if (!city) { setError('Please choose your birth place from the list.'); return; }
+    if (!city) { setError('Please search and select your birth place.'); return; }
     const birth = parseLocalDate(dob);
     const [h, m] = time.split(':').map(Number);
     const hourIST = h + (m || 0) / 60;
-    const kundli = generateKundli(birth, hourIST, city.lat, city.lng, city.tz);
+    const tz = tzOffsetHours(city.timezone, birth); // actual UTC offset at the birth date (handles DST)
+    const kundli = generateKundli(birth, hourIST, city.lat, city.lng, tz);
     setResult({ kundli, name: name.trim() || 'Birth Chart', dob, time, place: `${city.name}, ${city.region}` });
   };
 
@@ -96,27 +93,10 @@ export default function KundliPage() {
               className="w-full px-4 py-3 rounded-xl border border-earth-200 bg-white/80 focus:border-saffron-400 focus:outline-none focus:ring-2 focus:ring-saffron-100" />
             <p className="text-xs text-earth-500 mt-1">Accurate time is essential for the Lagna (ascendant).</p>
           </div>
-          <div className="relative">
+          <div>
             <label className="block text-sm font-semibold text-earth-700 mb-1">Birth Place</label>
-            <div className="relative">
-              <MapPin size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-earth-400" />
-              <input
-                value={cityQuery}
-                onChange={(e) => { setCityQuery(e.target.value); setShowList(true); setCity(null); }}
-                placeholder="Search city…"
-                className="w-full pl-9 pr-4 py-3 rounded-xl border border-earth-200 bg-white/80 focus:border-saffron-400 focus:outline-none focus:ring-2 focus:ring-saffron-100"
-              />
-            </div>
-            {suggestions.length > 0 && !city && (
-              <div className="absolute z-20 left-0 right-0 mt-1 bg-white border border-earth-200 rounded-xl shadow-premium-lg max-h-52 overflow-y-auto">
-                {suggestions.map((c) => (
-                  <button key={`${c.name}-${c.lat}`} onClick={() => { setCity(c); setCityQuery(`${c.name}, ${c.region}`); setShowList(false); }}
-                    className="block w-full text-left px-4 py-2 text-sm hover:bg-saffron-50 text-earth-700">
-                    {c.name} <span className="text-earth-400">· {c.region}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            <CityAutocomplete value={city} onSelect={setCity} placeholder="Search any city or town…" />
+            {city && <p className="text-[11px] text-earth-400 mt-1">{city.lat.toFixed(2)}°, {city.lng.toFixed(2)}° · {city.timezone}</p>}
           </div>
         </div>
         {error && <p className="text-sm text-red-600 mt-3">{error}</p>}

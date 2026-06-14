@@ -1,19 +1,17 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { generateKundli, RASHIS_EN, type Kundli } from '@/lib/kp-kundli';
 import { matchKundlis, type MatchResult } from '@/lib/kp-kundli-match';
-import { searchCities, type City } from '@/lib/cities';
-import { Reveal } from '@/components/ui/Reveal';
-import { MapPin, Printer, Heart, Check, X } from 'lucide-react';
+import { tzOffsetHours, type GeoCity } from '@/lib/geo';
+import { CityAutocomplete } from '@/components/ui/CityAutocomplete';
+import { Printer, Heart, Check, X } from 'lucide-react';
 
-interface BirthData { name: string; dob: string; time: string; city: City | null; cityQuery: string }
-const empty = (): BirthData => ({ name: '', dob: '', time: '12:00', city: null, cityQuery: '' });
+interface BirthData { name: string; dob: string; time: string; city: GeoCity | null }
+const empty = (): BirthData => ({ name: '', dob: '', time: '12:00', city: null });
 function parseLocalDate(s: string): Date { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
 
 function BirthForm({ title, accent, data, onChange }: { title: string; accent: string; data: BirthData; onChange: (d: BirthData) => void }) {
-  const [showList, setShowList] = useState(false);
-  const suggestions = useMemo(() => (showList ? searchCities(data.cityQuery) : []), [data.cityQuery, showList]);
   return (
     <div className="bg-white rounded-3xl border border-earth-100 shadow-premium p-5">
       <h3 className={`font-display font-bold text-lg mb-4 ${accent}`}>{title}</h3>
@@ -26,23 +24,8 @@ function BirthForm({ title, accent, data, onChange }: { title: string; accent: s
           <input type="time" value={data.time} onChange={(e) => onChange({ ...data, time: e.target.value })}
             className="w-full px-3 py-2.5 rounded-xl border border-earth-200 focus:border-saffron-400 focus:outline-none focus:ring-2 focus:ring-saffron-100" />
         </div>
-        <div className="relative">
-          <MapPin size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-earth-400" />
-          <input value={data.cityQuery}
-            onChange={(e) => { onChange({ ...data, cityQuery: e.target.value, city: null }); setShowList(true); }}
-            placeholder="Birth place…"
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-earth-200 focus:border-saffron-400 focus:outline-none focus:ring-2 focus:ring-saffron-100" />
-          {suggestions.length > 0 && !data.city && (
-            <div className="absolute z-20 left-0 right-0 mt-1 bg-white border border-earth-200 rounded-xl shadow-premium-lg max-h-44 overflow-y-auto">
-              {suggestions.map((c) => (
-                <button key={`${c.name}-${c.lat}`} onClick={() => { onChange({ ...data, city: c, cityQuery: `${c.name}, ${c.region}` }); setShowList(false); }}
-                  className="block w-full text-left px-4 py-2 text-sm hover:bg-saffron-50 text-earth-700">
-                  {c.name} <span className="text-earth-400">· {c.region}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <CityAutocomplete value={data.city} onSelect={(c) => onChange({ ...data, city: c })} placeholder="Birth place — any city/town…" />
+        {data.city && <p className="text-[11px] text-earth-400">{data.city.lat.toFixed(2)}°, {data.city.lng.toFixed(2)}° · {data.city.timezone}</p>}
       </div>
     </div>
   );
@@ -66,7 +49,9 @@ export default function KundliMatchingPage() {
     if (!boy.dob || !boy.city || !girl.dob || !girl.city) { setError('Please fill both birth details (date + place).'); return; }
     const mk = (d: BirthData): Kundli => {
       const [h, m] = d.time.split(':').map(Number);
-      return generateKundli(parseLocalDate(d.dob), h + (m || 0) / 60, d.city!.lat, d.city!.lng, d.city!.tz);
+      const birth = parseLocalDate(d.dob);
+      const tz = tzOffsetHours(d.city!.timezone, birth);
+      return generateKundli(birth, h + (m || 0) / 60, d.city!.lat, d.city!.lng, tz);
     };
     const bK = mk(boy), gK = mk(girl);
     setResult({ match: matchKundlis(bK, gK), boy: bK, girl: gK, boyName: boy.name.trim() || 'Boy', girlName: girl.name.trim() || 'Girl' });
