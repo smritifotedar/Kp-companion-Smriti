@@ -6,6 +6,8 @@ import { getNamakaran } from '@/lib/kp-namakaran';
 import { downloadICS } from '@/lib/ics';
 import { SaveDayButton } from '@/components/ui/SaveDayButton';
 import { Reveal } from '@/components/ui/Reveal';
+import { CityAutocomplete } from '@/components/ui/CityAutocomplete';
+import { type GeoCity } from '@/lib/geo';
 import { CalendarPlus } from 'lucide-react';
 
 const PROFILES_KEY = 'kp-janma-profiles';
@@ -16,6 +18,7 @@ interface Profile {
   dob: string;       // yyyy-mm-dd
   time?: string;     // HH:mm
   place?: string;
+  cityData?: GeoCity | null;
 }
 
 function parseLocalDate(s: string): Date {
@@ -46,6 +49,7 @@ export default function JanmaTithiPage() {
   const [dob, setDob] = useState('');
   const [time, setTime] = useState('12:00');
   const [place, setPlace] = useState('');
+  const [city, setCity] = useState<GeoCity | null>(null);
   const [year, setYear] = useState(new Date().getFullYear());
   const [result, setResult] = useState<JanmaBirthdayResult | null>(null);
 
@@ -79,6 +83,7 @@ export default function JanmaTithiPage() {
     setDob(p.dob);
     setTime(p.time || '12:00');
     setPlace(p.place || '');
+    setCity(p.cityData ?? null);
     setResult(null);
   };
 
@@ -90,6 +95,7 @@ export default function JanmaTithiPage() {
       dob,
       time,
       place,
+      cityData: city,
     };
     persist([...profiles, p]);
     setNewName('');
@@ -193,13 +199,14 @@ export default function JanmaTithiPage() {
 
             <div>
               <label className="block text-sm font-semibold text-earth-700 mb-1">Place of Birth (optional)</label>
-              <input
-                type="text"
-                value={place}
-                onChange={(e) => setPlace(e.target.value)}
-                placeholder="e.g., Srinagar, Jammu, Delhi"
-                className="w-full px-4 py-3 rounded-xl border border-earth-200 bg-white/80 focus:border-saffron-400 focus:outline-none focus:ring-2 focus:ring-saffron-100 text-earth-800"
+              <CityAutocomplete
+                value={city}
+                onSelect={(c) => { setCity(c); setPlace(c ? `${c.name}, ${c.region}` : ''); }}
+                placeholder="Search any city or town…"
               />
+              <p className="text-xs text-earth-500 mt-1">
+                Any city/town worldwide. (The Tithi is reckoned per the Kashmiri Pandit Panchang, so this is for your record.)
+              </p>
             </div>
 
             <div>

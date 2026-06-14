@@ -21,6 +21,21 @@ export async function geocode(query: string): Promise<GeoCity[]> {
 }
 
 /**
+ * Resolve the precise IANA timezone for a coordinate (DST-correct worldwide).
+ * Indian results already carry "Asia/Kolkata"; this fills it in for everywhere else
+ * the moment a city is selected.
+ */
+export async function resolveTimezone(lat: number, lng: number): Promise<string> {
+  try {
+    const res = await fetch(`/api/timezone?lat=${lat}&lng=${lng}`);
+    const data = await res.json();
+    return (data?.timezone as string) || '';
+  } catch {
+    return '';
+  }
+}
+
+/**
  * UTC offset (in hours, e.g. 5.5, -5, 10) for an IANA timezone at a given date.
  * Uses the runtime's tz database, so it accounts for DST and historical rules
  * for the actual birth date.
