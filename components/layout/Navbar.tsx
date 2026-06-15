@@ -29,6 +29,7 @@ const NAV: NavItem[] = [
     children: [
       { label: 'Kundli (Birth Chart)', href: '/kundli' },
       { label: 'Kundli Matching', href: '/kundli-matching' },
+      { label: 'Numerology', href: '/numerology' },
       { label: 'Muhurat Finder', href: '/muhurat' },
       { label: 'Janma Tithi', href: '/janma-tithi' },
       { label: 'Gotra Finder', href: '/gotra-finder' },

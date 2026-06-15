@@ -1,26 +1,13 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { generateKundli, RASHIS_EN, rashiLord, type Kundli } from '@/lib/kp-kundli';
+import { generateKundli, RASHIS_EN, type Kundli } from '@/lib/kp-kundli';
+import { interpretKundli } from '@/lib/kp-kundli-interpret';
 import { KP_TITHIS } from '@/lib/kp-panchang';
 import { tzOffsetHours, type GeoCity } from '@/lib/geo';
 import { CityAutocomplete } from '@/components/ui/CityAutocomplete';
 import { NorthIndianChart } from '@/components/ui/NorthIndianChart';
-import { Printer, Sparkles } from 'lucide-react';
-
-const RASHI_TRAIT = [
-  'energetic, pioneering and bold', 'steady, patient and grounded', 'curious, communicative and quick',
-  'nurturing, emotional and intuitive', 'confident, warm and dignified', 'analytical, precise and helpful',
-  'balanced, charming and fair', 'intense, focused and resourceful', 'optimistic, philosophical and free',
-  'disciplined, ambitious and practical', 'original, independent and humane', 'compassionate, imaginative and gentle',
-];
-const DASHA_THEME: Record<string, string> = {
-  Sun: 'authority, recognition and vitality', Moon: 'emotions, home and the mind',
-  Mars: 'energy, courage and initiative', Mercury: 'learning, commerce and communication',
-  Jupiter: 'wisdom, growth, fortune and dharma', Venus: 'relationships, comfort, art and prosperity',
-  Saturn: 'discipline, responsibility and hard-won maturity', Rahu: 'ambition, change and worldly desire',
-  Ketu: 'detachment, spirituality and inner work',
-};
+import { Printer, Sparkles, User, Moon as MoonIcon, Sun as SunIcon, Star, Orbit, Home, Gem, TrendingUp, ScrollText } from 'lucide-react';
 
 function parseLocalDate(s: string): Date { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
 function fmt(d: Date) { return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
@@ -60,6 +47,8 @@ export default function KundliPage() {
     const nm = num === 15 ? (paksha === 'Shukla' ? 'Purnima' : 'Amavasya') : KP_TITHIS[num - 1];
     return `${nm} · ${paksha} Paksha`;
   }, [k]);
+
+  const reading = useMemo(() => (k ? interpretKundli(k, result!.name) : null), [k, result]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
@@ -138,6 +127,51 @@ export default function KundliPage() {
               ))}
             </div>
 
+            {/* Overview */}
+            {reading && (
+              <div className="rounded-2xl border border-saffron-100 bg-gradient-to-br from-saffron-50 to-amber-50 p-5">
+                <h3 className="font-display font-bold text-earth-900 flex items-center gap-2 mb-2"><ScrollText size={18} className="text-saffron-500" /> Your Chart at a Glance</h3>
+                <p className="text-sm text-earth-700 leading-relaxed">{reading.overview}</p>
+              </div>
+            )}
+
+            {/* Three pillars: Lagna, Moon, Sun */}
+            {reading && (
+              <div>
+                <h3 className="font-display font-bold text-earth-900 mb-3">The Three Pillars of You</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    { icon: <User size={16} />, tag: 'Lagna · Body & Self', sign: `${reading.ascendant.sign} (${reading.ascendant.signEn})`, sub: `${reading.ascendant.element} · ${reading.ascendant.quality} · ${reading.ascendant.lord}`, text: reading.ascendant.text },
+                    { icon: <MoonIcon size={16} />, tag: 'Moon · Mind & Emotions', sign: `${reading.moon.sign} (${reading.moon.signEn})`, sub: 'Your inner temperament', text: reading.moon.text },
+                    { icon: <SunIcon size={16} />, tag: 'Sun · Soul & Vitality', sign: `${reading.sun.sign} (${reading.sun.signEn})`, sub: 'Your core identity', text: reading.sun.text },
+                  ].map((p) => (
+                    <div key={p.tag} className="rounded-2xl border border-earth-100 bg-white p-4">
+                      <div className="flex items-center gap-1.5 text-saffron-600 text-[11px] font-ui font-semibold uppercase tracking-wide">{p.icon}{p.tag}</div>
+                      <div className="font-display font-bold text-earth-900 mt-1">{p.sign}</div>
+                      <div className="text-[11px] text-earth-400 mb-2">{p.sub}</div>
+                      <p className="text-xs text-earth-600 leading-relaxed">{p.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Janma Nakshatra */}
+            {reading && (
+              <div className="rounded-2xl border border-earth-100 bg-white p-5">
+                <h3 className="font-display font-bold text-earth-900 flex items-center gap-2 mb-3"><Star size={18} className="text-saffron-500" /> Janma Nakshatra — {reading.nakshatra.name}</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                  {[['Deity', reading.nakshatra.deity], ['Symbol', reading.nakshatra.symbol], ['Ruler', reading.nakshatra.lord], ['Gana', reading.nakshatra.gana]].map(([l, v]) => (
+                    <div key={l} className="rounded-xl bg-saffron-50/60 border border-saffron-100 p-2 text-center">
+                      <div className="text-[10px] text-earth-500 uppercase tracking-wide">{l}</div>
+                      <div className="text-xs font-semibold text-earth-800 mt-0.5">{v}</div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-earth-700 leading-relaxed">{reading.nakshatra.text}</p>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               {/* Chart */}
               <div className="rounded-2xl border border-earth-100 p-4 bg-white">
@@ -186,25 +220,81 @@ export default function KundliPage() {
                   );
                 })}
               </div>
-              {k.dasha.currentMaha && (
-                <p className="text-sm text-earth-600 mt-3">
-                  You are currently in <strong>{k.dasha.currentMaha.lord} Mahadasha</strong>
-                  {k.dasha.currentAntar && <> with <strong>{k.dasha.currentAntar.lord} Antardasha</strong></>} — a period emphasising{' '}
-                  {DASHA_THEME[k.dasha.currentMaha.lord]}.
-                </p>
+              {reading?.dasha.text && (
+                <p className="text-sm text-earth-600 mt-3 leading-relaxed">{reading.dasha.text}</p>
               )}
             </div>
 
-            {/* Personalized notes */}
-            <div className="bg-saffron-50 rounded-2xl p-4 text-sm text-earth-700 leading-relaxed">
-              <h3 className="font-display font-semibold text-earth-800 mb-1">About Your Chart</h3>
-              <p>
-                With <strong>{k.lagna.rashiName} Lagna</strong>, your outward nature tends to be {RASHI_TRAIT[k.lagna.rashi]}
-                (ruled by {rashiLord(k.lagna.rashi)}). Your Moon in <strong>{RASHIS_EN[k.moonRashi]}</strong> shapes an inner
-                temperament that is {RASHI_TRAIT[k.moonRashi]}, born under <strong>{k.janmaNakshatra.name}</strong> nakshatra.
-                {k.dasha.currentMaha && <> The current {k.dasha.currentMaha.lord} period highlights {DASHA_THEME[k.dasha.currentMaha.lord]}.</>}
-              </p>
-            </div>
+            {/* Planet-by-planet reading */}
+            {reading && (
+              <div>
+                <h3 className="font-display font-bold text-earth-900 flex items-center gap-2 mb-3"><Orbit size={18} className="text-saffron-500" /> Planetary Influences</h3>
+                <div className="space-y-2">
+                  {reading.planets.map((p) => (
+                    <div key={p.name} className="rounded-xl border border-earth-100 bg-white p-3 flex gap-3">
+                      <div className="shrink-0 w-10 h-10 rounded-full bg-earth-900 text-amber-100 flex items-center justify-center font-display font-bold text-sm">{p.abbr}</div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-display font-semibold text-earth-900">{p.name}</span>
+                          <span className="text-xs text-earth-400">in {p.signEn} · House {p.house}</span>
+                          {p.dignity && <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${p.dignity === 'Debilitated' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}`}>{p.dignity}</span>}
+                          {p.retro && !['Rahu', 'Ketu'].includes(p.name) && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">Retrograde</span>}
+                        </div>
+                        <p className="text-xs text-earth-600 leading-relaxed mt-0.5">{p.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Houses */}
+            {reading && (
+              <div>
+                <h3 className="font-display font-bold text-earth-900 flex items-center gap-2 mb-3"><Home size={18} className="text-saffron-500" /> The Twelve Houses (Bhavas)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {reading.houses.map((h) => (
+                    <div key={h.num} className="rounded-xl border border-earth-100 bg-white p-3">
+                      <div className="font-display font-semibold text-earth-800 text-sm">{h.name} · {h.sign}</div>
+                      <p className="text-[11px] text-earth-600 leading-relaxed mt-0.5">{h.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Yogas & Doshas */}
+            {reading && reading.yogas.length > 0 && (
+              <div>
+                <h3 className="font-display font-bold text-earth-900 flex items-center gap-2 mb-3"><Gem size={18} className="text-saffron-500" /> Yogas &amp; Doshas in Your Chart</h3>
+                <div className="space-y-2">
+                  {reading.yogas.map((y, i) => (
+                    <div key={i} className={`rounded-xl border p-3 ${y.tone === 'good' ? 'bg-green-50 border-green-100' : y.tone === 'challenge' ? 'bg-amber-50 border-amber-100' : 'bg-earth-50 border-earth-100'}`}>
+                      <div className={`font-display font-semibold text-sm ${y.tone === 'good' ? 'text-green-700' : y.tone === 'challenge' ? 'text-amber-700' : 'text-earth-700'}`}>{y.name}</div>
+                      <p className="text-xs text-earth-600 leading-relaxed mt-0.5">{y.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Strengths & Guidance */}
+            {reading && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="rounded-2xl border border-green-100 bg-green-50 p-4">
+                  <h3 className="font-display font-bold text-green-800 flex items-center gap-2 mb-2"><TrendingUp size={17} /> Key Strengths</h3>
+                  <ul className="space-y-1.5 text-xs text-earth-700">
+                    {reading.strengths.map((s, i) => <li key={i} className="flex gap-2"><span className="text-green-500 mt-0.5">✦</span><span>{s}</span></li>)}
+                  </ul>
+                </div>
+                <div className="rounded-2xl border border-saffron-100 bg-saffron-50 p-4">
+                  <h3 className="font-display font-bold text-saffron-800 flex items-center gap-2 mb-2"><ScrollText size={17} /> Guidance</h3>
+                  <ul className="space-y-1.5 text-xs text-earth-700">
+                    {reading.guidance.map((s, i) => <li key={i} className="flex gap-2"><span className="text-saffron-500 mt-0.5">›</span><span>{s}</span></li>)}
+                  </ul>
+                </div>
+              </div>
+            )}
 
             <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-amber-800">
               <strong>Note:</strong> Positions are computed with sidereal (Lahiri) astronomy and whole-sign houses
