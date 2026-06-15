@@ -46,6 +46,7 @@ const NAV: NavItem[] = [
       { label: 'KP Archive', href: '/archive' },
     ],
   },
+  { label: 'Community', href: '/community' },
   { label: 'Ask Guide', href: '/knowledge-guide' },
 ];
 

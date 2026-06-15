@@ -10,15 +10,15 @@
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.1",
-    "@supabase/supabase-js": "^2.45.4",
+    "@supabase/supabase-js": "^2.108.2",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "framer-motion": "^11.11.1",
+    "lucide-react": "^0.447.0",
     "next": "14.2.13",
     "react": "^18",
     "react-dom": "^18",
-    "lucide-react": "^0.447.0",
-    "date-fns": "^3.6.0",
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.3",
-    "framer-motion": "^11.11.1"
+    "tailwind-merge": "^2.5.3"
   },
   "devDependencies": {
     "@types/node": "^20",
