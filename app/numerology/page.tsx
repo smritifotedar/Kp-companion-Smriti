@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import {
-  computeNumerology, NUMBER_MEANING, NUMBER_ATTR, PERSONAL_YEAR_THEME, reduceToSingle,
+  computeNumerology, NUMBER_MEANING, NUMBER_ATTR, NUMBER_COMPAT, PERSONAL_YEAR_THEME, reduceToSingle,
   type NumerologyResult,
 } from '@/lib/numerology';
-import { Printer, Hash, Sparkles, Gem, Heart, User, Star, CalendarClock } from 'lucide-react';
+import { Printer, Hash, Sparkles, Gem, Heart, User, Star, CalendarClock, Briefcase, Activity, Lightbulb, Users } from 'lucide-react';
 
 function parseLocalDate(s: string): Date { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
 function fmt(d: Date) { return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }); }
@@ -124,6 +124,26 @@ export default function NumerologyPage() {
               </div>
             </div>
 
+            {/* Life in detail — career, love, health */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { icon: <Briefcase size={15} />, label: 'Career & Work', text: NUMBER_MEANING[r.lifePath].careers },
+                { icon: <Heart size={15} />, label: 'Love & Relationships', text: NUMBER_MEANING[r.lifePath].love },
+                { icon: <Activity size={15} />, label: 'Health & Wellbeing', text: NUMBER_MEANING[r.lifePath].health },
+              ].map((c) => (
+                <div key={c.label} className="rounded-2xl border border-earth-100 bg-white p-4">
+                  <div className="flex items-center gap-1.5 text-saffron-600 text-[11px] font-ui font-semibold uppercase tracking-wide mb-1">{c.icon}{c.label}</div>
+                  <p className="text-xs text-earth-700 leading-relaxed">{c.text}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Affirmation */}
+            <div className="rounded-2xl bg-gradient-to-r from-saffron-500 to-amber-500 text-white p-5 text-center">
+              <div className="text-[11px] uppercase tracking-widest opacity-80">Your Affirmation</div>
+              <p className="font-display text-lg sm:text-xl mt-1">“{NUMBER_MEANING[r.lifePath].affirmation}”</p>
+            </div>
+
             {/* Vedic: Mulank & Bhagyank with planetary attributes */}
             <div>
               <h3 className="font-display font-bold text-earth-900 flex items-center gap-2 mb-3"><Sparkles size={18} className="text-saffron-500" /> Vedic Numbers &amp; Planets</h3>
@@ -146,7 +166,11 @@ export default function NumerologyPage() {
               <div className="rounded-2xl border border-saffron-100 bg-gradient-to-br from-saffron-50 to-amber-50 p-5">
                 <h3 className="font-display font-bold text-earth-900 flex items-center gap-2 mb-3"><Gem size={18} className="text-saffron-500" /> Your Lucky Attributes <span className="text-xs font-normal text-earth-400">(by Mulank {r.mulank})</span></h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {[['Ruling Planet', attr.planet], ['Lucky Gem', attr.gem], ['Lucky Colour', attr.color], ['Lucky Day', attr.day]].map(([l, v]) => (
+                  {[
+                    ['Ruling Planet', attr.planet], ['Lucky Gem', attr.gem], ['Lucky Colour', attr.color], ['Lucky Day', attr.day],
+                    ['Lucky Numbers', NUMBER_MEANING[r.lifePath].luckyNumbers.join(', ')], ['Lucky Metal', attr.metal], ['Favourable Direction', attr.direction],
+                    ['Mantra', attr.mantra],
+                  ].map(([l, v]) => (
                     <div key={l} className="rounded-xl bg-white border border-saffron-100 p-3 text-center">
                       <div className="text-[10px] text-earth-500 uppercase tracking-wide">{l}</div>
                       <div className="text-sm font-semibold text-earth-800 mt-0.5">{v}</div>
@@ -155,6 +179,45 @@ export default function NumerologyPage() {
                 </div>
               </div>
             )}
+
+            {/* Suggestions & remedies */}
+            <div className="rounded-2xl border border-earth-100 bg-white p-5">
+              <h3 className="font-display font-bold text-earth-900 flex items-center gap-2 mb-3"><Lightbulb size={18} className="text-saffron-500" /> Suggestions &amp; Remedies</h3>
+              <ul className="space-y-1.5 text-sm text-earth-700 mb-3">
+                {NUMBER_MEANING[r.lifePath].suggestions.map((s, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-saffron-500 mt-0.5">›</span><span>{s}</span></li>
+                ))}
+              </ul>
+              {attr && (
+                <div className="rounded-xl bg-saffron-50 border border-saffron-100 p-3 text-sm text-earth-700">
+                  <strong>Vedic remedy ({attr.planet}):</strong> {attr.remedy} Chant <em>{attr.mantra}</em>, and the {attr.gem} is your supportive gemstone (consult an astrologer before wearing one).
+                </div>
+              )}
+            </div>
+
+            {/* Compatibility */}
+            <div className="rounded-2xl border border-earth-100 bg-white p-5">
+              <h3 className="font-display font-bold text-earth-900 flex items-center gap-2 mb-3"><Users size={18} className="text-saffron-500" /> Number Compatibility <span className="text-xs font-normal text-earth-400">(by Mulank {r.mulank})</span></h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="rounded-xl bg-green-50 border border-green-100 p-3">
+                  <div className="text-xs font-semibold text-green-700 mb-1">Harmonious with</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {NUMBER_COMPAT[r.mulank].harmonious.map((n) => (
+                      <span key={n} className="text-xs bg-white border border-green-200 rounded-full px-2 py-0.5 text-earth-700"><strong>{n}</strong> · {NUMBER_MEANING[n].title}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-xl bg-amber-50 border border-amber-100 p-3">
+                  <div className="text-xs font-semibold text-amber-700 mb-1">Handle with care</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {NUMBER_COMPAT[r.mulank].caution.length ? NUMBER_COMPAT[r.mulank].caution.map((n) => (
+                      <span key={n} className="text-xs bg-white border border-amber-200 rounded-full px-2 py-0.5 text-earth-700"><strong>{n}</strong> · {NUMBER_MEANING[n].title}</span>
+                    )) : <span className="text-xs text-earth-500">You get along easily with most numbers.</span>}
+                  </div>
+                </div>
+              </div>
+              <p className="text-[11px] text-earth-400 mt-2">A gentle guide for friendships, partnerships and marriage — chemistry depends on the whole chart, not one number alone.</p>
+            </div>
 
             {/* Name numbers */}
             {r.hasName ? (
