@@ -15,7 +15,7 @@ export function AuthPanel({ message }: { message?: string }) {
   const [notice, setNotice] = useState('');
 
   const submit = async () => {
-    if (!supabase) return;
+    if (!supabase) { setError('Community backend is not configured.'); return; }
     setError(''); setNotice(''); setBusy(true);
     try {
       if (mode === 'up') {
@@ -25,13 +25,19 @@ export function AuthPanel({ message }: { message?: string }) {
           options: { data: { username: username.trim(), full_name: fullName.trim() } },
         });
         if (error) throw error;
-        if (!data.session) setNotice('Account created! Please check your email to confirm, then sign in.');
+        if (data.session) {
+          setNotice('Welcome! You are signed in.');           // confirmation off → logged in
+        } else {
+          setNotice('Account created! Check your email for a confirmation link, then come back and sign in.');
+          setMode('in');
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong.');
+      const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : '';
+      setError(msg || 'Something went wrong. Please try again.');
     } finally {
       setBusy(false);
     }
