@@ -32,6 +32,7 @@ const NAV: NavItem[] = [
       { label: 'Muhurat Finder', href: '/muhurat' },
       { label: 'Janma Tithi', href: '/janma-tithi' },
       { label: 'Gotra Finder', href: '/gotra-finder' },
+      { label: 'Events & Reminders', href: '/events' },
       { label: 'My Days', href: '/my-days' },
     ],
   },

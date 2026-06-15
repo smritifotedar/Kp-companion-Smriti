@@ -19,6 +19,7 @@ export interface ICSEvent {
   date: Date;            // event day (all-day)
   yearlyRecurring?: boolean;
   location?: string;
+  reminderDaysBefore?: number;  // VALARM trigger; default 1 day before (0 = on the day)
 }
 
 export function buildICS(ev: ICSEvent): string {
@@ -46,7 +47,10 @@ export function buildICS(ev: ICSEvent): string {
   if (ev.description) lines.push(`DESCRIPTION:${escapeICS(ev.description)}`);
   if (ev.location) lines.push(`LOCATION:${escapeICS(ev.location)}`);
   if (ev.yearlyRecurring) lines.push('RRULE:FREQ=YEARLY');
-  lines.push('BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY', `DESCRIPTION:${escapeICS(ev.title)}`, 'END:VALARM');
+  const days = Math.max(0, Math.round(ev.reminderDaysBefore ?? 1));
+  // Relative alarm: at event start (0 days before) or N days before.
+  const trigger = days === 0 ? 'TRIGGER:-PT0S' : `TRIGGER:-P${days}D`;
+  lines.push('BEGIN:VALARM', trigger, 'ACTION:DISPLAY', `DESCRIPTION:${escapeICS(ev.title)}`, 'END:VALARM');
   lines.push('END:VEVENT', 'END:VCALENDAR');
 
   return lines.join('\r\n');
