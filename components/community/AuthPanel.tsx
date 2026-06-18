@@ -18,6 +18,9 @@ export function AuthPanel({ message }: { message?: string }) {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
+  const [emailMode, setEmailMode] = useState<'password' | 'otp'>('password');
+  const [emailOtp, setEmailOtp] = useState('');
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -53,6 +56,28 @@ export function AuthPanel({ message }: { message?: string }) {
         if (error) throw error;
       }
     } catch (e) { setError(msg(e)); } finally { setBusy(false); }
+  };
+
+  const sendEmailOtp = async () => {
+    if (!supabase) return;
+    clear();
+    if (!email.trim()) { setError('Enter your email address.'); return; }
+    if (mode === 'up' && !username.trim()) { setError('Please choose a username.'); return; }
+    setBusy(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { shouldCreateUser: true, data: mode === 'up' ? { username: username.trim(), full_name: fullName.trim() } : undefined },
+    });
+    if (error) setError(error.message); else { setEmailOtpSent(true); setNotice('Code sent to your email — check inbox & spam.'); }
+    setBusy(false);
+  };
+
+  const verifyEmailOtp = async () => {
+    if (!supabase) return;
+    clear(); setBusy(true);
+    const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: emailOtp.trim(), type: 'email' });
+    if (error) setError(error.message);
+    setBusy(false);
   };
 
   const sendPhoneOtp = async () => {
@@ -112,7 +137,7 @@ export function AuthPanel({ message }: { message?: string }) {
       {/* Method tabs */}
       <div className="grid grid-cols-2 gap-2">
         {([['email', 'Email', Mail], ['phone', 'Mobile', Phone]] as const).map(([m, label, Icon]) => (
-          <button key={m} onClick={() => { setMethod(m); clear(); setOtpSent(false); }}
+          <button key={m} onClick={() => { setMethod(m); clear(); setOtpSent(false); setEmailOtpSent(false); }}
             className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium border ${method === m ? 'border-saffron-500 bg-saffron-50 text-saffron-700' : 'border-earth-200 text-earth-500'}`}>
             <Icon size={15} /> {label}
           </button>
@@ -129,16 +154,44 @@ export function AuthPanel({ message }: { message?: string }) {
 
       {method === 'email' ? (
         <>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className={inputCls} />
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password"
-            onKeyDown={(e) => e.key === 'Enter' && emailSubmit()} className={inputCls} />
-          <Messages error={error} notice={notice} />
-          {mode === 'in' && (
-            <p className="text-right -mt-1"><button onClick={() => { setView('forgot'); clear(); }} className="text-xs text-saffron-600 hover:underline">Forgot password?</button></p>
+          {/* Password vs one-time code */}
+          <div className="grid grid-cols-2 gap-2">
+            {([['password', 'Password'], ['otp', 'Email me a code']] as const).map(([m, label]) => (
+              <button key={m} onClick={() => { setEmailMode(m); clear(); setEmailOtpSent(false); }}
+                className={`py-1.5 rounded-lg text-xs font-medium border ${emailMode === m ? 'border-saffron-500 bg-saffron-50 text-saffron-700' : 'border-earth-200 text-earth-500'}`}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className={inputCls} disabled={emailMode === 'otp' && emailOtpSent} />
+
+          {emailMode === 'password' ? (
+            <>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password"
+                onKeyDown={(e) => e.key === 'Enter' && emailSubmit()} className={inputCls} />
+              <Messages error={error} notice={notice} />
+              {mode === 'in' && (
+                <p className="text-right -mt-1"><button onClick={() => { setView('forgot'); clear(); }} className="text-xs text-saffron-600 hover:underline">Forgot password?</button></p>
+              )}
+              <button onClick={emailSubmit} disabled={busy || !email || !password} className="btn-primary w-full py-3 disabled:opacity-50">
+                {busy ? 'Please wait…' : mode === 'in' ? 'Sign In' : 'Create Account'}
+              </button>
+            </>
+          ) : !emailOtpSent ? (
+            <>
+              <Messages error={error} notice={notice} />
+              <button onClick={sendEmailOtp} disabled={busy || !email} className="btn-primary w-full py-3 disabled:opacity-50">{busy ? 'Sending…' : 'Send code'}</button>
+            </>
+          ) : (
+            <>
+              <input value={emailOtp} onChange={(e) => setEmailOtp(e.target.value)} placeholder="Enter 6-digit code" inputMode="numeric"
+                onKeyDown={(e) => e.key === 'Enter' && verifyEmailOtp()} className={inputCls} />
+              <Messages error={error} notice={notice} />
+              <button onClick={verifyEmailOtp} disabled={busy || !emailOtp} className="btn-primary w-full py-3 disabled:opacity-50">{busy ? 'Verifying…' : 'Verify & continue'}</button>
+              <button onClick={sendEmailOtp} disabled={busy} className="text-xs text-saffron-600 hover:underline w-full">Resend code</button>
+            </>
           )}
-          <button onClick={emailSubmit} disabled={busy || !email || !password} className="btn-primary w-full py-3 disabled:opacity-50">
-            {busy ? 'Please wait…' : mode === 'in' ? 'Sign In' : 'Create Account'}
-          </button>
         </>
       ) : (
         <>
@@ -162,7 +215,7 @@ export function AuthPanel({ message }: { message?: string }) {
 
       <p className="text-center text-sm text-earth-500 mt-2">
         {mode === 'in' ? "New here? " : 'Already a member? '}
-        <button onClick={() => { setMode(mode === 'in' ? 'up' : 'in'); clear(); setOtpSent(false); }} className="text-saffron-600 font-semibold hover:underline">
+        <button onClick={() => { setMode(mode === 'in' ? 'up' : 'in'); clear(); setOtpSent(false); setEmailOtpSent(false); }} className="text-saffron-600 font-semibold hover:underline">
           {mode === 'in' ? 'Create an account' : 'Sign in'}
         </button>
       </p>
