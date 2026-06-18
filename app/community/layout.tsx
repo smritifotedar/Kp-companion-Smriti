@@ -19,8 +19,8 @@ function Header() {
           </Link>
           {user ? (
             <div className="flex items-center gap-2">
-              <Link href={`/community/u/${user.id}`} className="text-sm font-medium text-earth-700 hover:text-saffron-600 hidden sm:block">
-                {profile?.username || 'Profile'}
+              <Link href="/community/account" className="text-sm font-medium text-earth-700 hover:text-saffron-600 hidden sm:block">
+                {profile?.username || 'Account'}
               </Link>
               <button onClick={signOut} title="Sign out" className="text-earth-400 hover:text-red-500 p-1.5"><LogOut size={16} /></button>
             </div>
